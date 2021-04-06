@@ -35,7 +35,7 @@ join teacherprofile t2 on d.DISC_LeadTeacher_id = t2.TP_UserID where SL_AcademGr
                 $row['TeacherName'],
                 $row['TypeLessonName'],
                 $row['NumberHours'],
-                $row['AL']
+                $row['AL']== 1 ? 'Да' : 'Нет'
             );
         }
 
