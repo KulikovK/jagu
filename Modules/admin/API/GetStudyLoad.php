@@ -15,7 +15,7 @@ if(isset($_POST['AGCode']))
     $qwery = "Select d.DISC_name As DisciplineName, t.TL_Name As TypeLessonName, SL_NumberHours As NumberHours, concat(t2.TP_Surname, ' ', t2.TP_Name, ' ', t2.TP_MiddleName) As TeacherName, SL_AdditionalLoad as AL from studyload
 join discipline d on studyload.SL_DISC_id = d.DISC_id
 join typelesson t on studyload.SL_TypeLesson_code = t.TL_id
-join teacherprofile t2 on d.DISC_LeadTeacher_id = t2.TP_UserID where SL_AcademGroup_code =:AGCode";
+join teacherprofile t2 on SL_Teacher_id = t2.TP_UserID where SL_AcademGroup_code =:AGCode";
 
     try {
         $db = db_connect();
@@ -35,7 +35,7 @@ join teacherprofile t2 on d.DISC_LeadTeacher_id = t2.TP_UserID where SL_AcademGr
                 $row['TeacherName'],
                 $row['TypeLessonName'],
                 $row['NumberHours'],
-                $row['AL']== 1 ? 'Да' : 'Нет'
+                $row['AL'] == 1 ? 'Да' : 'Нет'
             );
         }
 
