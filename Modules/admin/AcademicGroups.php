@@ -529,14 +529,18 @@ defined('ADMIN') or Header("Location: /");
                                  aria-labelledby="v-pills-discipline">
                                 <div class="card">
                                     <div class="card-header">
-                                        <p class="text-center card-text h5">Учебная наругка группы</p>
+                                        <p class="text-center card-text h5">Учебная нагрузка группы</p>
                                         <p>Здесь Вы можете назначить списко дисциплин для академической группы.</p>
                                         <button id="btnShowFormAddDisciplineForAG" class="btn btn-outline-primary">Добавить нагрузку</button>
                                     </div>
 
                                     <div class="card-body">
-                                        <div id="divBlockFormAddDisciplineForAG" style="border-radius: 2%" class="border bg-light p-2 border-info" hidden>
+                                        <div id="prompt-infoStudyLoad" class="">
+
+                                        </div>
+                                        <div id="divBlockFormAddDisciplineForAG" style="border-radius: 1%" class="border bg-light p-2 border-info" hidden>
                                             <form id="formAddDisciplineForAG"  class="">
+                                                <input id="EditAG-Discipline-AGCode" name="AGCode" hidden value=""/>
                                                 <div class="form-group row">
                                                     <label class="col-form-label control-label  col-sm-4 " for="ListFaculty">Факультет</label>
                                                     <div class="col-sm-8"><select id="EditAG-Discipline_ListFaculty" style="width: 33%;"
@@ -571,7 +575,7 @@ defined('ADMIN') or Header("Location: /");
 
                                                 <div class="form-group row"><label class="col-form-label control-label col-sm-4" for="NumberHours">Количество
                                                         часов*</label>
-                                                    <div class="col-sm-8"><input name="NumberHours" type="number" min="1" max="150"
+                                                    <div class="col-sm-8"><input id="EditAG-Discipline-NumberHours" name="NumberHours" type="number" min="1" max="150"
                                                               required/></div></div>
 
                                                 <div class="form-group row">
@@ -583,17 +587,18 @@ defined('ADMIN') or Header("Location: /");
 
                                                 <div class="form-group">
                                                     <div class="custom-control custom-checkbox custom-control-inline">
-                                                        <input type="checkbox" id="AdditionalLoad" name="AdditionalLoad" value="2" class="custom-control-input">
+                                                        <input type="checkbox" id="AdditionalLoad" name="AdditionalLoad" value="1" class="custom-control-input">
                                                         <label class="custom-control-label" for="AdditionalLoad">Считать данную нагрузку дополнительной для выбранного преподавателя.</label>
                                                     </div>
                                                 </div>
 
-                                                <button class="btn btn-outline-success mr-sm-2" form="formAddDisciplineForAG" id="AddDisciplineForAcademicGroups" disabled>Добавить</button>
-                                                <button class="btn btn-outline-secondary mrsm-2" onclick="$('#divBlockFormAddDisciplineForAG').attr('hidden', true);">Отмена</button>
+
                                             </form>
+                                            <button class="btn btn-outline-success mr-sm-2" form="formAddDisciplineForAG" id="AddDisciplineForAcademicGroups" disabled>Добавить</button>
+                                            <button class="btn btn-outline-secondary mr-sm-2"  onclick="$('#divBlockFormAddDisciplineForAG').attr('hidden', true); $('#divBlockTablesStudyLoad').attr('hidden', false);">Отмена</button>
                                         </div>
 
-                                        <div>
+                                        <div id="divBlockTablesStudyLoad" class="mt-2">
                                             <table id="TableStudyLoad" class="table table-bordered thead-dark">
                                                 <thead>
                                                 <tr>
@@ -602,7 +607,7 @@ defined('ADMIN') or Header("Location: /");
                                                     <th>Тип занятий</th>
                                                     <th>Количество часов</th>
                                                     <th>Доп. нагрузка</th>
-                                                    <th></th>
+                                                    <th>id</th>
                                                 </tr>
                                                 </thead>
 
@@ -620,6 +625,39 @@ defined('ADMIN') or Header("Location: /");
                             <!--Subgroups-->
                             <div class="tab-pane fade" id="vp-agedit-subgroups" role="tabpanel"
                                  aria-labelledby="v-pills-messages-tab">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <p class="text-center card-text h5">Подгруппы</p>
+                                        <form id="formAddSubGroups" class="mr-sm-4 form-inline">
+                                            <div class="form-group mr-sm-4" style="width: 50%">
+                                            <select class="custom-select" name="StudyLoad_id" required id="StudyLoadList"></select>
+                                            </div>
+                                            <input class="form-control mr-sm-4" name="NumberSubGoups" style="width: auto" type="number" min="1" max="4" id="NumberSubgroups" required placeholder="Номер подгруппы"/>
+                                        </form>
+                                        <button class="btn btn-outline-primary" form="formAddSubGroups" id="btnCreateSubGroups">Создать подгруппу</button>
+
+                                    </div>
+                                    <div id="promptInfoSubgroups">
+
+                                    </div>
+
+                                    <div class="card-body">
+                                         <div id="divBlockSubGroupsList">
+                                             <table id="TableSubGroupsList" class="table table-bordered">
+                                                 <thead>
+                                                 <tr>
+                                                     <th>Дисциплина</th>
+                                                     <th>Преподаватель</th>
+                                                     <th>Тип занятий</th>
+                                                     <th>Номер подгруппы</th>
+                                                     <th>Количество студентов</th>
+                                                 </tr>
+                                                 </thead>
+                                             </table>
+                                         </div>
+                                    </div>
+                                </div>
+
 
                             </div>
 
@@ -735,6 +773,7 @@ defined('ADMIN') or Header("Location: /");
             }
         },
 
+
         column: [
             {data: '0'},
             {data: '1'},
@@ -797,6 +836,47 @@ defined('ADMIN') or Header("Location: /");
                 return json.data;
             }
         },
+        select: true,
+
+        column: [
+            {data: 0},
+            {data: 1},
+            {data: 2},
+            {data: 3},
+            {data: 4},
+            {data: 5}
+        ]
+
+
+
+    });
+
+    let TableSubgroups = $("#TableSubGroupsList").DataTable({
+        processing: true,
+        responsive: true,
+
+        //  select: true,
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json"
+        },
+        stateSave: true,
+
+        ajax: {
+            type: "post",
+            url: "API/GetSubGroupsList.php",
+            data: {AGCode: function (){
+                    return $("#AGC_AGCode").text();
+                }
+            },
+
+            serverSide: true,
+            cache: false,
+
+            dataSrc: function (json) {
+                return json.data;
+            }
+        },
+        select: true,
 
         column: [
             {data: 0},
@@ -805,13 +885,28 @@ defined('ADMIN') or Header("Location: /");
             {data: 3},
             {data: 4}
         ],
-        "columnDefs": [
-            {
-                "data": null,
-                "defaultContent": "<button class='btn btn-outline-primary'>Edit</button>",
-                "targets": -1
+    });
+
+    StudyLoad.column(5).visible(false);
+
+    $("#formAddSubGroups").on('submit', function (e){
+        e.preventDefault();
+
+        $.ajax({
+            method: 'post',
+            dataType: 'html',
+            url: 'API/AddSubGroups.php',
+            data: $("#formAddSubGroups").serialize(),
+
+            success: function (html){
+                $("#promptInfoSubgroups").html(html);
+            },
+            error: function (){
+                $("#promptInfoSubgroups").html('<p class="alert alert-danger">Ошибка обработти запроса.</p>');
             }
-        ]
+        });
+        $("#promptInfoSubgroups").show();
+        TableSubgroups.ajax.reload();
     });
 
     $('#AcademicGroupsTable tbody').on('click', 'tr', function () {
@@ -819,10 +914,43 @@ defined('ADMIN') or Header("Location: /");
         AGConfig(data[0]);
     });
 
+
+
     $("#v-pills-discipline").click(function (){
         console.log('Click ok!');
         StudyLoad.ajax.data = {"AGCode": $("#AGC_AGCode").text()};
         StudyLoad.ajax.reload();
+        $("#divBlockTablesStudyLoad").attr('hidden', false);
+        $("#divBlockFormAddDisciplineForAG").attr('hidden', true);
+        $("#prompt-infoStudyLoad").html('');
+        $("#formAddDisciplineForAG *").trigger('reset');
+    });
+
+    $("#v-pills-messages-tab").click(function (){
+        $.ajax({
+            method: 'post',
+            url: "API/GetStudyLoad.php",
+            data: {'type': 'list', 'AGCode': $("#AGC_AGCode").text()},
+            cache: false,
+            dataType: 'json',
+
+            success: function (json){
+                console.log('Study Load List');
+
+                console.log(json);
+
+                $("#StudyLoadList").html(new Option(""));
+                for(let id in json)
+                {
+                  $("#StudyLoadList").append(new Option(json[id]['DisciplineName'] + ' / ' + json[id]['TypeLessonName'] + ' / '+json[id]['TeacherName'], json[id]['ID'], false, false));
+                }
+            }
+        });
+
+        $("#promptInfoSubgroups").hide();
+
+        TableSubgroups.ajax.data = {"AGCode": $("#AGC_AGCode").text()};
+        TableSubgroups.ajax.reload();
     })
 
     $(document).ready(function() {
@@ -832,6 +960,7 @@ defined('ADMIN') or Header("Location: /");
             placeholder: 'Выберите нужное значение',
             allowClear: true
         });
+
 
         $.ajax({
             method: "POST",
@@ -900,7 +1029,37 @@ defined('ADMIN') or Header("Location: /");
                     $("#EditAG-Discipline_ListDiscipline").append(new Option(jsonDisciplineList[dlID]['Name'], jsonDisciplineList[dlID]['ID'], false, false));
                 }
             }
-        })
+        });
+
+
+
+        $("#formAddDisciplineForAG").submit(function (e){
+           e.preventDefault();
+
+           $.ajax({
+               method: 'post',
+               url: 'API/AddStudyLoad.php',
+               data: $("#formAddDisciplineForAG").serialize(),
+               dataType: 'html',
+
+               cache: false,
+
+               success: function (htmlOut){
+                   //alert(htmlOut);
+                   $("#prompt-infoStudyLoad").html(htmlOut);
+                   StudyLoad.ajax.reload();
+                   $("#divBlockFormAddDisciplineForAG").attr('hidden', true);
+                   $("#divBlockTablesStudyLoad").attr('hidden', false);
+               },
+
+               error: function (error){
+                   $("#prompt-infoStudyLoad").html("<p class='alert alert-danger'>" +
+                       "Не удалось добавить запись. Повторите операцию позже или обратитесь к администратору.</p>")
+                   StudyLoad.ajax.reload();
+               }
+           })
+
+        });
 
         $("#EditAG-Discipline_ListDiscipline").change(function (){
             $("#AddDisciplineForAcademicGroups").attr('disabled', false);
@@ -908,9 +1067,62 @@ defined('ADMIN') or Header("Location: /");
 
         $("#btnShowFormAddDisciplineForAG").click(function (ev){
             $("#divBlockFormAddDisciplineForAG").attr('hidden', false);
-        })
+            $("#divBlockTablesStudyLoad").attr('hidden', true);
+            $('#EditAG-Discipline-AGCode').val($("#AGC_AGCode").text());
+            $("#prompt-infoStudyLoad").html("");
+        });
+
+
 
     });
+
+    $("#TableStudyLoad tbody").on('click', 'tr', function (){
+        //  $("#divBlockTablesStudyLoad").hide();
+        var idStudyLoad = StudyLoad.row(this).data();
+        //alert(idStuduLoad[5]);
+
+        $("#divBlockTablesStudyLoad").attr('hidden', true);
+        $("#divBlockFormAddDisciplineForAG").attr('hidden', false);
+
+        $.ajax({
+            method: 'post',
+            url: 'API/GetStudyLoad.php',
+            data: {'SLID': idStudyLoad[5]},
+            dataType: 'json',
+            cache: false,
+
+
+            success: function (json){
+                //   JSON.parse(json)
+                // $("#EditAG-Discipline_ListDiscipline").val(json[0]['DisciplineID']).selected();
+                console.log(json[0]['AdditionalLoad']);
+
+                $("#EditAG-Discipline_ListDiscipline").val(json[0]['DisciplineID']);
+                $("#EditAG-Discipline_TypeLesson").val(json[0]['TypeLesson']);
+                $("#EditAG-Discipline-NumberHours").val(json[0]['NumberHours']);
+                $("#TeacherForThisTypeLesson").val(json[0]['TeacherID']);
+
+                if(json[0]['AdditionalLoad'] === 1) {
+                    $("#AdditionalLoad").prop('checked', true);
+                }
+                else {
+                    $("#AdditionalLoad").prop('checked', false);
+                }
+
+                $("#formAddDisciplineForAG select").trigger('change');
+
+
+            },
+
+            error: function (xhr, error, text){
+                $("#prompt-infoStudyLoad").html("<p class='alert alert-danger'>Ошибка подгрузки данных для редактирования</p>");
+            }
+        });
+
+
+
+
+    })
 
     $("#btnAddAcademicGroups").click(function () {
         $("#ModalCreateAG").modal({
@@ -1024,6 +1236,8 @@ defined('ADMIN') or Header("Location: /");
         $('#AGEditAGCode').val(AGCode);
         $('#EditAGCodeOld').val(AGCode);
 
+        $("#EditAG").toggle();
+
         $.ajax({
             method: 'post',
             url: 'API/GetTableAcademicGroups.php',
@@ -1128,7 +1342,7 @@ defined('ADMIN') or Header("Location: /");
                     }
                 });
 
-
+                $("#EditAG").toggle();
             }
         });
 
@@ -1162,6 +1376,7 @@ defined('ADMIN') or Header("Location: /");
 
             success: function (jsonResult) {
                 $('#infoUpdateAG').html(jsonResult);
+                $("#AGC_AGCode").text($("#AGEditAGCode").val());
                 AGTable.ajax.reload();
             },
 
@@ -1215,6 +1430,10 @@ defined('ADMIN') or Header("Location: /");
                 $("#StudentsListBoby").html("<div class=\"list-group-item\">\n" +
                     "                                                 Студенты" +
                     "                                            </div>");
+
+                if(json.length == 0)
+                    $("#StudentsListBoby").append("<p class='text-center'>Нет записей</p>")
+
                 for (let id in json) {
                     $("#StudentsListBoby").append('<a href="#" title="Нажмите для получения информации или редактирования." onclick="ShowStudentsInfo(' + json[id]['ID'] + ')" class="list-group-item list-group-item-action" data-toggle="list">' + json[id]['StudentFIO'] + '</a>');
                 }
