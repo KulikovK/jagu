@@ -16,7 +16,6 @@ try {
 
     echo json_encode($ListAG);
 
-
 }catch (PDOException $exception){
     exit($exception);
 }
