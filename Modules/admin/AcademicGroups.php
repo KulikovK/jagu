@@ -1035,7 +1035,10 @@ defined('ADMIN') or Header("Location: /");
 
         $("#formAddDisciplineForAG").submit(function (e){
            e.preventDefault();
-
+           $("#prompt-infoStudyLoad").html('<div class="d-flex justify-content-center">'+
+              ' <div class="spinner-border text-primary" role="status">'+
+               ' <span class="sr-only">Loading...</span>'+
+        '</div></div>');
            $.ajax({
                method: 'post',
                url: 'API/AddStudyLoad.php',
@@ -1080,9 +1083,10 @@ defined('ADMIN') or Header("Location: /");
         //  $("#divBlockTablesStudyLoad").hide();
         var idStudyLoad = StudyLoad.row(this).data();
         //alert(idStuduLoad[5]);
+        $("#prompt-infoStudyLoad").html('<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"> <span class="sr-only">Loading...</span></div></div>');
 
-        $("#divBlockTablesStudyLoad").attr('hidden', true);
-        $("#divBlockFormAddDisciplineForAG").attr('hidden', false);
+
+
 
         $.ajax({
             method: 'post',
@@ -1111,6 +1115,9 @@ defined('ADMIN') or Header("Location: /");
 
                 $("#formAddDisciplineForAG select").trigger('change');
 
+                $("#prompt-infoStudyLoad").html("");
+                $("#divBlockTablesStudyLoad").attr('hidden', true);
+                $("#divBlockFormAddDisciplineForAG").attr('hidden', false);
 
             },
 
