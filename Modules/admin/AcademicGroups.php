@@ -592,10 +592,14 @@ defined('ADMIN') or Header("Location: /");
                                                     </div>
                                                 </div>
 
+                                                <input type="text" name="isUpdateStudyLoad" value="NO" id="MakeToUpdateStudyLoad" hidden>
+
 
                                             </form>
-                                            <button class="btn btn-outline-success mr-sm-2" form="formAddDisciplineForAG" id="AddDisciplineForAcademicGroups" disabled>Добавить</button>
-                                            <button class="btn btn-outline-secondary mr-sm-2"  onclick="$('#divBlockFormAddDisciplineForAG').attr('hidden', true); $('#divBlockTablesStudyLoad').attr('hidden', false);">Отмена</button>
+                                            <button class="btn btn-success mr-sm-2" form="formAddDisciplineForAG" id="AddDisciplineForAcademicGroups" disabled>Добавить</button>
+                                            <button class="btn btn-danger mr-sm-2" hidden id="btnDeleteStudyLoad">Удалить</button>
+                                            <button class="btn btn-secondary mr-sm-2"  onclick="$('#divBlockFormAddDisciplineForAG').attr('hidden', true); $('#divBlockTablesStudyLoad').attr('hidden', false);">Отмена</button>
+
                                         </div>
 
                                         <div id="divBlockTablesStudyLoad" class="mt-2">
@@ -916,6 +920,7 @@ defined('ADMIN') or Header("Location: /");
 
 
 
+
     $("#v-pills-discipline").click(function (){
         console.log('Click ok!');
         StudyLoad.ajax.data = {"AGCode": $("#AGC_AGCode").text()};
@@ -1069,17 +1074,56 @@ defined('ADMIN') or Header("Location: /");
         });
 
         $("#btnShowFormAddDisciplineForAG").click(function (ev){
+
+            if($("#MakeToUpdateStudyLoad").val() != 'NO')
+            {
+                $("#formAddDisciplineForAG").trigger('reset');
+            }
+
+
+            $("#MakeToUpdateStudyLoad").val('NO');
+            $("#btnDeleteStudyLoad").attr("hidden", true);
+            $("#AddDisciplineForAcademicGroups").text("Добавить");
             $("#divBlockFormAddDisciplineForAG").attr('hidden', false);
             $("#divBlockTablesStudyLoad").attr('hidden', true);
             $('#EditAG-Discipline-AGCode').val($("#AGC_AGCode").text());
             $("#prompt-infoStudyLoad").html("");
+
         });
 
 
 
     });
 
-    $("#TableStudyLoad tbody").on('click', 'tr', function (){
+    $("#btnDeleteStudyLoad").click(function (){
+
+        $("#prompt-infoStudyLoad").html('<div class="d-flex justify-content-center"><div class="spinner-border text-danger" role="status"> <span class="sr-only">Loading...</span></div></div>');
+
+
+        $.ajax({
+            method: 'post',
+            url: 'API/DeleteStudyLoad.php',
+            data: {isUpdateStudyLoad: $('#MakeToUpdateStudyLoad').val()},
+            dataType: 'html',
+            cache: false,
+
+            success: function (html){
+                $("#prompt-infoStudyLoad").html(html);
+                $("#divBlockFormAddDisciplineForAG").attr('hidden', true);
+                $("#divBlockTablesStudyLoad").attr('hidden', false);
+            },
+            error: function () {
+                $("#prompt-infoStudyLoad").html("<p class='alert alert-danger'>Ошибка при отправке запроса!</p>");
+            }
+        });
+
+        StudyLoad.ajax.reload();
+
+
+
+    })
+
+    $("#TableStudyLoad tbody").on('dblclick', 'tr', function (){
         //  $("#divBlockTablesStudyLoad").hide();
         var idStudyLoad = StudyLoad.row(this).data();
         //alert(idStuduLoad[5]);
@@ -1115,9 +1159,13 @@ defined('ADMIN') or Header("Location: /");
 
                 $("#formAddDisciplineForAG select").trigger('change');
 
+                $("#MakeToUpdateStudyLoad").val(idStudyLoad[5]);
+                $("#AddDisciplineForAcademicGroups").text("Сохранить");
+                $("#btnDeleteStudyLoad").attr('hidden', false);
                 $("#prompt-infoStudyLoad").html("");
                 $("#divBlockTablesStudyLoad").attr('hidden', true);
                 $("#divBlockFormAddDisciplineForAG").attr('hidden', false);
+
 
             },
 
