@@ -603,7 +603,7 @@ defined('ADMIN') or Header("Location: /");
                                         </div>
 
                                         <div id="divBlockTablesStudyLoad" class="mt-2">
-                                            <table id="TableStudyLoad" class="table table-bordered thead-dark">
+                                            <table id="TableStudyLoad" class="table table-bordered table-hover thead-dark">
                                                 <thead>
                                                 <tr>
                                                     <th>Дисциплина</th>
@@ -647,23 +647,80 @@ defined('ADMIN') or Header("Location: /");
 
                                     <div class="card-body">
                                          <div id="divBlockSubGroupsList">
-                                             <table id="TableSubGroupsList" class="table table-bordered">
-                                                 <thead>
-                                                 <tr>
-                                                     <th>Дисциплина</th>
-                                                     <th>Преподаватель</th>
-                                                     <th>Тип занятий</th>
-                                                     <th>Номер подгруппы</th>
-                                                     <th>Количество студентов</th>
-                                                 </tr>
-                                                 </thead>
-                                             </table>
+
+
+                                                 <div id="divBlockTableSubgroups" style="">
+                                                     <table id="TableSubGroupsList" class="table table-hover table-bordered">
+                                                         <thead>
+                                                         <tr>
+                                                             <th>Дисциплина</th>
+                                                             <th>Преподаватель</th>
+                                                             <th>Тип занятий</th>
+                                                             <th>Номер подгруппы</th>
+                                                             <th>Количество студентов</th>
+                                                             <th>ID</th>
+                                                         </tr>
+                                                         </thead>
+                                                     </table>
+                                                 </div>
+
+                                                 <div id="divBlockStudentListForSG" hidden  class="border border-dark bg-light p-2" style="width: 100%; border-radius: 1%">
+
+                                                     <div class="d-flex justify-content-between">
+
+                                                         <div style="width: 50%" class="m-1 p-2 border">
+                                                             <table style="width: 100%" id="TableAllStudentList"
+                                                                    class="table table-hover">
+                                                                 <thead class="thead-light">
+                                                                 <tr>
+                                                                     <th></th>
+                                                                     <th>Все студенты</th>
+                                                                     <th></th>
+                                                                     <th></th>
+                                                                     <th></th>
+                                                                 </tr>
+                                                                 </thead>
+                                                                 <tbody>
+
+                                                                 </tbody>
+                                                             </table>
+                                                         </div>
+
+                                                         <div style="width: 50%" class="m-1 p-2 border">
+                                                             <table style="width: 100%" id="TableListCurrentSubgroups"
+                                                                    class="table table-hover">
+                                                                 <thead class="thead-light">
+                                                                 <tr>
+                                                                     <th></th>
+                                                                     <th>Студенты данной подгруппы</th>
+                                                                     <th></th>
+                                                                 </tr>
+                                                                 </thead>
+                                                                 <tbody>
+
+                                                                 </tbody>
+                                                             </table>
+                                                         </div>
+                                                     </div>
+
+
+                                                     <div class="mt-2">
+                                                         <button id="BtnDeleteSubGroups" class="btn btn-danger">Удалить
+                                                             подгруппу
+                                                         </button>
+                                                         <button id="BtnCancelSubgroups"
+                                                                 onclick="$('#divBlockStudentListForSG').attr('hidden', true); $('#divBlockTableSubgroups').attr('hidden', false);"
+                                                                 class="btn btn-secondary">Назад
+                                                         </button>
+                                                     </div>
+                                                 </div>
+                                             </div>
                                          </div>
                                     </div>
                                 </div>
 
 
-                            </div>
+
 
                             <!--AG Delete-->
                             <div class="tab-pane fade" id="vp-agedit-delete" role="tabpanel"
@@ -840,7 +897,7 @@ defined('ADMIN') or Header("Location: /");
                 return json.data;
             }
         },
-        select: true,
+        select: false,
 
         column: [
             {data: 0},
@@ -859,7 +916,7 @@ defined('ADMIN') or Header("Location: /");
         processing: true,
         responsive: true,
 
-        //  select: true,
+        select: true,
         language: {
             url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json"
         },
@@ -880,7 +937,7 @@ defined('ADMIN') or Header("Location: /");
                 return json.data;
             }
         },
-        select: true,
+
 
         column: [
             {data: 0},
@@ -891,7 +948,133 @@ defined('ADMIN') or Header("Location: /");
         ],
     });
 
+    let TableAllStudentList = $("#TableAllStudentList").DataTable({
+        processing: true,
+        paging: false,
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json"
+        },
+        select: {
+            style: 'multi'
+        },
+
+        dom: 'fBt',
+
+        buttons:[
+            {
+                text: 'Добавить',
+                action: function (e, dt, note, cfg) {
+                    alert('add');
+                }
+            }
+
+        ],
+
+        ajax: {
+            type: "post",
+            url: "API/GetStudentsForAG.php",
+            serverSide: true,
+            cache: false,
+            data: {AGCode: function (){
+                    return $("#AGC_AGCode").text();
+                }, Type: 'jsonForDT'
+            },
+
+
+            dataSrc: function (json) {
+                return json.data;
+            }
+        },
+
+        column: [
+            {data: 1},
+            {data: 2},
+            {data: 3},
+            {data: 4},
+        ],
+        order: [[ 1, 'asc' ]],
+
+        columnDefs:[
+            {
+                targets: 0,
+                data: null,
+                defaultContent: '',
+                orderable: false,
+                className: 'select-checkbox'
+            }
+        ]
+
+    });
+
+    let TableListCurrentSubGroups = $("#TableListCurrentSubgroups").DataTable({
+        paging: false,
+        processing: true,
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json"
+        },
+
+        dom: 'Btpfrt',
+
+        select: {
+            style: 'multi'
+        },
+
+        order: [[ 1, 'asc' ]],
+
+        buttons:[
+            {
+                text: 'Исключить',
+                'action': function (e, dt, node, cfg){
+                    alert("action!");
+                }
+            }
+        ],
+
+        ajax: {
+            type: "post",
+            url: "API/GetStudentsForAG.php",
+            serverSide: true,
+            cache: false,
+            data: {SGID: function (id){
+                    var ids = $.map(TableSubgroups.rows('.selected').data(), function (item) {
+                        return item[5]
+                    });
+                    console.log(ids)
+                    return ids;
+                }}
+            ,
+
+
+                 dataSrc: function (json) {
+                return json.data;
+            }
+        },
+
+        column:[
+            {data: 1},
+            {data: 2}
+        ],
+
+        columnDefs:[
+            {
+                targets: 0,
+                data: null,
+                defaultContent: '',
+                orderable: false,
+                className: 'select-checkbox'
+            }
+        ],
+    })
+
+
+
+
+
     StudyLoad.column(5).visible(false);
+    TableSubgroups.column(5).visible(false);
+
+    TableAllStudentList.columns([2,3,4]).visible(false);
+    TableListCurrentSubGroups.column(2).visible(false);
 
     $("#formAddSubGroups").on('submit', function (e){
         e.preventDefault();
@@ -931,6 +1114,7 @@ defined('ADMIN') or Header("Location: /");
         $("#formAddDisciplineForAG *").trigger('reset');
     });
 
+    //SubGroups
     $("#v-pills-messages-tab").click(function (){
         $.ajax({
             method: 'post',
@@ -952,10 +1136,20 @@ defined('ADMIN') or Header("Location: /");
             }
         });
 
+        $("#divBlockTableSubgroups").attr('hidden', false);
+        $("#divBlockStudentListForSG").attr('hidden', true);
+
         $("#promptInfoSubgroups").hide();
 
         TableSubgroups.ajax.data = {"AGCode": $("#AGC_AGCode").text()};
         TableSubgroups.ajax.reload();
+
+        $('#StudentsListForSG').html("");
+
+        TableAllStudentList.ajax.data = {'AGCode': $("AGC_AGCode").text()};
+        TableAllStudentList.ajax.reload();
+
+
     })
 
     $(document).ready(function() {
@@ -965,6 +1159,10 @@ defined('ADMIN') or Header("Location: /");
             placeholder: 'Выберите нужное значение',
             allowClear: true
         });
+
+
+
+
 
 
         $.ajax({
@@ -1123,7 +1321,7 @@ defined('ADMIN') or Header("Location: /");
 
     })
 
-    $("#TableStudyLoad tbody").on('dblclick', 'tr', function (){
+    $("#TableStudyLoad tbody").on('click', 'tr', function (){
         //  $("#divBlockTablesStudyLoad").hide();
         var idStudyLoad = StudyLoad.row(this).data();
         //alert(idStuduLoad[5]);
@@ -1178,6 +1376,33 @@ defined('ADMIN') or Header("Location: /");
 
 
     })
+
+
+    TableSubgroups.on('select', function (e, dt, type, indexes){
+
+
+
+        var idSG = TableSubgroups.row(indexes).data()[5];
+
+        console.log(TableListCurrentSubGroups.ajax.data);
+
+        TableListCurrentSubGroups.ajax.data = {'SGID': idSG};
+
+        console.log(TableListCurrentSubGroups.ajax.data);
+
+
+        TableAllStudentList.ajax.reload();
+        TableListCurrentSubGroups.ajax.reload(function (id){
+            console.log(id);
+        })
+
+        $("#divBlockTableSubgroups").attr('hidden', true);
+        $("#divBlockStudentListForSG").attr('hidden', false);
+
+
+        TableSubgroups.rows().deselect();
+    })
+
 
     $("#btnAddAcademicGroups").click(function () {
         $("#ModalCreateAG").modal({
@@ -1465,6 +1690,7 @@ defined('ADMIN') or Header("Location: /");
 
     })
 
+    //Student List
     $("#v-pills-profile-tab").click(function () {
         $("#StudentsListBoby").html("<span class='spinner-border text-center' role='status'></span>");
         $("#EditStudentBlock").css('display', 'none');
@@ -1511,7 +1737,9 @@ defined('ADMIN') or Header("Location: /");
                 $("#FormEditStudentListAG option[value='" + $("#AGC_AGCode").text() + "']").attr("selected", "selected");
 
             }
-        })
+        });
+
+
 
 
     });
