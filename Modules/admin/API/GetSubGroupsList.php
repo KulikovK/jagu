@@ -8,7 +8,7 @@ if(!isset($_POST['AGCode']))
 
 $AGCode = $_POST['AGCode'];
 
-$query = "Select d.DISC_name As DisciplineName, 
+$query = "Select SG_id As ID, d.DISC_name As DisciplineName, 
        concat(t.TP_Surname, ' ', t.TP_Name, ' ', t.TP_MiddleName) As FIOTeacher, 
        t2.TL_Name As TypeLesson, 
        SG_Numbers As NumberSubGroups,
@@ -38,7 +38,8 @@ try{
             $row['FIOTeacher'],
             $row['TypeLesson'],
             $row['NumberSubGroups'],
-            $row['CountStudents']
+            $row['CountStudents'],
+            $row['ID']
 
         );
     }
