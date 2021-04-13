@@ -68,9 +68,8 @@ if(isset($_POST['isNotSG']) == true And isset($_POST['AGCode']) And isset($_POST
     $SGID = $_POST['SGID'];
     $query = "Select SP_id As ID,
             CONCAT(SP_Surname, ' ', SP_Name, ' ', SP_MiddleName) As FIO
-       from studentprofile 
-left join studentlistinsubgroups s on studentprofile.SP_id = s.SLS_Student_id
-where SP_AcademGroup_id = :AGCode AND (s.SLS_SubGroups_id != :SGID Or s.SLS_SubGroups_id is null )";
+       from studentprofile
+       where SP_AcademGroup_id = :AGCode And 0 = (SELECT COUNT(*) from studentlistinsubgroups where SLS_SubGroups_id = :SGID And SLS_Student_id = SP_id) ";
 
     try{
         $db = db_connect();
