@@ -666,6 +666,8 @@ defined('ADMIN') or Header("Location: /");
 
                                                  <div id="divBlockStudentListForSG" hidden  class="border border-dark bg-light p-2" style="width: 100%; border-radius: 1%">
 
+                                                     <div id="prompt_DistributionBySubGroups"></div>
+
                                                      <div class="d-flex justify-content-between">
 
                                                          <div style="width: 50%" class="m-1 p-2 border">
@@ -675,8 +677,6 @@ defined('ADMIN') or Header("Location: /");
                                                                  <tr>
                                                                      <th></th>
                                                                      <th>Все студенты</th>
-                                                                     <th></th>
-                                                                     <th></th>
                                                                      <th></th>
                                                                  </tr>
                                                                  </thead>
@@ -704,14 +704,15 @@ defined('ADMIN') or Header("Location: /");
                                                      </div>
 
 
-                                                     <div class="mt-2">
+                                                     <div class="mt-2 d-flex justify-content-between">
+                                                         <button id="BtnCancelSubgroups"
+                                                                 onclick="$('#divBlockStudentListForSG').attr('hidden', true); $('#divBlockTableSubgroups').attr('hidden', false); TableSubgroups.ajax.reload();"
+                                                                 class="btn btn-secondary">Назад
+                                                         </button>
                                                          <button id="BtnDeleteSubGroups" class="btn btn-danger">Удалить
                                                              подгруппу
                                                          </button>
-                                                         <button id="BtnCancelSubgroups"
-                                                                 onclick="$('#divBlockStudentListForSG').attr('hidden', true); $('#divBlockTableSubgroups').attr('hidden', false);"
-                                                                 class="btn btn-secondary">Назад
-                                                         </button>
+
                                                      </div>
                                                  </div>
                                              </div>
@@ -964,7 +965,37 @@ defined('ADMIN') or Header("Location: /");
             {
                 text: 'Добавить',
                 action: function (e, dt, note, cfg) {
-                    alert('add');
+                    //Get ID Students
+                   var StudentList = [];
+                   $.each(dt.rows({selected: true}).data(), function() {
+                        StudentList.push(this["2"]);
+                    });
+                   console.log(StudentList);
+
+                   if(StudentList.length === 0)
+                   {
+                       alert("Необходимо выбрать хотя бы одного студента!");
+                       return
+                   }
+
+                  /* $.each(StudentList, function (id){
+                       alert(StudentList[id])
+                   });*/
+
+                    $.ajax({
+                        method: 'POST',
+                        url: 'API/AddStudentToSubGroup.php',
+                        data: {'SGID': $("#BtnDeleteSubGroups").val(), 'StudentsList': StudentList},
+                        DataType: 'html',
+
+                        success: function (html) {
+                           $("#prompt_DistributionBySubGroups").html(html);
+                           TableAllStudentList.ajax.reload();
+                           TableListCurrentSubGroups.ajax.reload();
+                        },
+                    });
+
+
                 }
             }
 
@@ -977,11 +1008,16 @@ defined('ADMIN') or Header("Location: /");
             cache: false,
             data: {AGCode: function (){
                     return $("#AGC_AGCode").text();
-                }, Type: 'jsonForDT'
+                },
+                isNotSG: true,
+                SGID: function (){
+                      return $("#BtnDeleteSubGroups").val()
+            }
             },
 
 
             dataSrc: function (json) {
+                console.log(json);
                 return json.data;
             }
         },
@@ -1025,7 +1061,38 @@ defined('ADMIN') or Header("Location: /");
             {
                 text: 'Исключить',
                 'action': function (e, dt, node, cfg){
-                    alert("action!");
+                    var StudentList = [];
+                    $.each(dt.rows({selected: true}).data(), function() {
+                        StudentList.push(this["2"]);
+                    });
+                    console.log(StudentList);
+
+                    if(StudentList.length === 0)
+                    {
+                        alert("Необходимо выбрать хотя бы одного студента!");
+                        return;
+                    }
+
+                    $.ajax({
+                        method: 'POST',
+                        url: 'API/ExcludeStudentFromSubGroups.php',
+                        dataType: 'html',
+                        data: {
+                            ListStudent: StudentList,
+                            SubGroupsID: $("#BtnDeleteSubGroups").val()
+                        },
+
+                        success: function (html)
+                        {
+                            $("#prompt_DistributionBySubGroups").html(html);
+                            TableListCurrentSubGroups.ajax.reload();
+                            TableAllStudentList.ajax.reload();
+                        },
+
+                        error: function (){
+                            $("#prompt_DistributionBySubGroups").html("<p class='alert alert-danger'>Ошибка выполнения запроса</p>");
+                        }
+                    })
                 }
             }
         ],
@@ -1035,12 +1102,8 @@ defined('ADMIN') or Header("Location: /");
             url: "API/GetStudentsForAG.php",
             serverSide: true,
             cache: false,
-            data: {SGID: function (id){
-                    var ids = $.map(TableSubgroups.rows('.selected').data(), function (item) {
-                        return item[5]
-                    });
-                    console.log(ids)
-                    return ids;
+            data: {SGID: function (){
+                    return $("#BtnDeleteSubGroups").val();
                 }}
             ,
 
@@ -1073,7 +1136,7 @@ defined('ADMIN') or Header("Location: /");
     StudyLoad.column(5).visible(false);
     TableSubgroups.column(5).visible(false);
 
-    TableAllStudentList.columns([2,3,4]).visible(false);
+    TableAllStudentList.columns([2]).visible(false);
     TableListCurrentSubGroups.column(2).visible(false);
 
     $("#formAddSubGroups").on('submit', function (e){
@@ -1146,7 +1209,6 @@ defined('ADMIN') or Header("Location: /");
 
         $('#StudentsListForSG').html("");
 
-        TableAllStudentList.ajax.data = {'AGCode': $("AGC_AGCode").text()};
         TableAllStudentList.ajax.reload();
 
 
@@ -1381,21 +1443,18 @@ defined('ADMIN') or Header("Location: /");
     TableSubgroups.on('select', function (e, dt, type, indexes){
 
 
+       var IDSG = dt.row(indexes).data();
 
-        var idSG = TableSubgroups.row(indexes).data()[5];
+      // alert(IDSG[5]);
 
-        console.log(TableListCurrentSubGroups.ajax.data);
-
-        TableListCurrentSubGroups.ajax.data = {'SGID': idSG};
-
-        console.log(TableListCurrentSubGroups.ajax.data);
-
+       $("#BtnDeleteSubGroups").val(IDSG[5]);
 
         TableAllStudentList.ajax.reload();
         TableListCurrentSubGroups.ajax.reload(function (id){
             console.log(id);
         })
 
+        $("#prompt_DistributionBySubGroups").html("");
         $("#divBlockTableSubgroups").attr('hidden', true);
         $("#divBlockStudentListForSG").attr('hidden', false);
 
