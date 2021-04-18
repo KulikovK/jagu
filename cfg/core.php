@@ -8,12 +8,21 @@
  * Version:
  */
 
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 require_once("global.php");
 global $RESPONSE_AJAX;
 session_start();
 
 // Поготовка заголовка страницы
-function GetPageTitle($ptText='')
+function GetPageTitle($ptText=''): string
 {
     if($ptText == '')
         return SITE_NAME;
@@ -22,7 +31,7 @@ function GetPageTitle($ptText='')
 }
 
 // Соединение с БД
-function db_connect()
+function db_connect(): ?PDO
 {
     try
         {
@@ -111,7 +120,7 @@ function GenerationActivationCode($UserID, $UserEmail)
 {
     $code = uniqid();
 
-    $hash = md5($code + $UserID);
+    $hash = md5($code . $UserID);
 
     $query = 'insert into accauntactivation(AA_UserID, AA_ActivationCodeHash) VALUE(:id, :hash)';
 
