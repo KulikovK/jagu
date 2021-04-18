@@ -1,4 +1,22 @@
 <?php
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module: Administrator
+ * Submodule: Academical Groups Panel
+ * Description: Управление академическими группами ВУЗа
+ * Version: 21.4.18.1354
+ */
+
 defined('ADMIN') or Header("Location: /");
 ?>
 
@@ -573,9 +591,18 @@ defined('ADMIN') or Header("Location: /");
                                                     </div>
                                                 </div>
 
+	                                            <div class="form-group row">
+		                                            <label class="col-form-label control-label col-sm-4 " for="TypeLesson">Семестр:*</label>
+		                                            <div class="col-sm-8">
+			                                            <input type="number" min="1" max="12" class="form-control"
+		                                                                          id="EditAG-Discipline_Semester"
+		                                                                          name="Semester" required>
+		                                            </div>
+	                                            </div>
+
                                                 <div class="form-group row"><label class="col-form-label control-label col-sm-4" for="NumberHours">Количество
                                                         часов*</label>
-                                                    <div class="col-sm-8"><input id="EditAG-Discipline-NumberHours" name="NumberHours" type="number" min="1" max="150"
+                                                    <div class="col-sm-8"><input class="form-control" id="EditAG-Discipline-NumberHours" name="NumberHours" type="number" min="1" max="150"
                                                               required/></div></div>
 
                                                 <div class="form-group row">
@@ -584,6 +611,15 @@ defined('ADMIN') or Header("Location: /");
                                                         <select class="custom-select" id="TeacherForThisTypeLesson" required name="EditAG-Discipline_ThisTeacher_id"></select>
                                                     </div>
                                                 </div>
+
+	                                            <div class="form-group row">
+		                                            <label class="col-form-label control-label col-sm-4">Форма контроля:</label>
+		                                            <div class="col-sm-8">
+			                                            <select class="custom-select" id="EditAG-Discipline-FromControl" name="FormControl"></select>
+		                                            </div>
+	                                            </div>
+
+
 
                                                 <div class="form-group">
                                                     <div class="custom-control custom-checkbox custom-control-inline">
@@ -603,15 +639,17 @@ defined('ADMIN') or Header("Location: /");
                                         </div>
 
                                         <div id="divBlockTablesStudyLoad" class="mt-2">
-                                            <table id="TableStudyLoad" class="table table-bordered table-hover thead-dark">
+                                            <table id="TableStudyLoad" style="width: 100%" class="table table-responsive table-bordered table-hover table-sm thead-dark">
                                                 <thead>
                                                 <tr>
                                                     <th>Дисциплина</th>
                                                     <th>Преподаватель</th>
                                                     <th>Тип занятий</th>
+	                                                <th>Семестр</th>
                                                     <th>Количество часов</th>
+	                                                <th>Форма контроля</th>
                                                     <th>Доп. нагрузка</th>
-                                                    <th>id</th>
+                                                    <th hidden>id</th>
                                                 </tr>
                                                 </thead>
 
@@ -769,6 +807,8 @@ defined('ADMIN') or Header("Location: /");
     let AGTable = $("#AcademicGroupsTable").DataTable({
         processing: true,
         responsive: true,
+	    orderCellsTop: true,
+	    fixedHeader: true,
 
         //  select: true,
         language: {
@@ -873,15 +913,62 @@ defined('ADMIN') or Header("Location: /");
 
     let StudyLoad = $("#TableStudyLoad").DataTable({
         processing: true,
-        responsive: true,
+        responsive: false,
+	    orderCellsTop: true,
+	    fixedHeader: true,
+	    dom: 'Bfrtip',
+
+searchBuilder: {
+	columns: [0,1,2, 3, 4, 5]
+},
 
         //  select: true,
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json"
+            url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json",
+	        searchBuilder: {
+            	button: 'Фильтр',
+		        add: '+',
+		        condition: 'Условие',
+		        clearAll: 'Сбросить',
+		        deleteTitle: 'Удалить',
+		        data: 'Столбец',
+		        leftTitle: 'Лево',
+		        logicAnd: 'И',
+		        logicOr: 'ИЛИ',
+		        rightTitle: 'Право',
+		        title: {
+			        0: 'Фильтры',
+			        _: 'Фильтров (%d)'
+		        },
+		        value: 'Значение',
+		        valueJoiner: 'et'
+	        }
         },
-        stateSave: true,
+        stateSave: false,
 
-
+	    buttons: [
+		    {
+			   extend: 'searchBuilder',
+			    columns: [0,1,2, 3, 4, 5],
+			    button: "Фильтр"
+		    },
+		    {
+			    extend: 'print',
+			    exportOptions: {
+				    columns: ':visible'
+			    }
+		    },
+		    {
+		    	extend: "excel",
+			    exportOptions: {
+				    columns: ':visible'
+			    }
+		    },
+		    {
+			   extend: 'colvis',
+			    collectionLayout: 'fixed two-column'
+		    }
+	    ],
 
         ajax: {
             type: "post",
@@ -895,6 +982,7 @@ defined('ADMIN') or Header("Location: /");
             cache: false,
 
             dataSrc: function (json) {
+            	console.log(json);
                 return json.data;
             }
         },
@@ -906,7 +994,9 @@ defined('ADMIN') or Header("Location: /");
             {data: 2},
             {data: 3},
             {data: 4},
-            {data: 5}
+            {data: 5},
+	        {data: 6},
+	        {data: 7}
         ]
 
 
@@ -1151,7 +1241,7 @@ defined('ADMIN') or Header("Location: /");
     });
 
 
-    StudyLoad.column(5).visible(false);
+    StudyLoad.column(7).visible(false);
     TableSubgroups.column(5).visible(false);
 
     TableAllStudentList.columns([2]).visible(false);
@@ -1233,6 +1323,24 @@ defined('ADMIN') or Header("Location: /");
     })
 
     $(document).ready(function() {
+
+	   /* $('#TableStudyLoad thead tr').clone(true).appendTo( '#TableStudyLoad thead' );
+	    $('#TableStudyLoad thead tr:eq(1) th').each( function (i) {
+		    var title = $(this).text();
+		    $(this).html( '<input style="width: 100%" type="text" placeholder="'+title+'" />' );
+
+		    $( 'input', this ).on( 'keyup change', function () {
+			    if ( StudyLoad.column(i).search() !== this.value ) {
+				    StudyLoad
+						    .column(i)
+						    .search( this.value )
+						    .draw();
+			    }
+		    } );
+	    } );*/
+
+
+
         $('select').select2({
             width: "100%",
             theme: 'classic',
@@ -1241,7 +1349,19 @@ defined('ADMIN') or Header("Location: /");
         });
 
 
+        $.ajax({
+	       method: 'post',
+	       url: "API/GetListFormControl.php",
+	        dataType: 'json',
 
+	        success: function (json){
+		        $("#EditAG-Discipline-FromControl").append(new Option(""));
+	       	for(let fID in json) {
+		        $("#EditAG-Discipline-FromControl").append(new Option(json[fID]['Name'], json[fID]['ID']));
+	        }
+	        }
+
+        });
 
 
 
@@ -1413,7 +1533,7 @@ defined('ADMIN') or Header("Location: /");
         $.ajax({
             method: 'post',
             url: 'API/GetStudyLoad.php',
-            data: {'SLID': idStudyLoad[5]},
+            data: {'SLID': idStudyLoad[7]},
             dataType: 'json',
             cache: false,
 
@@ -1427,6 +1547,8 @@ defined('ADMIN') or Header("Location: /");
                 $("#EditAG-Discipline_TypeLesson").val(json[0]['TypeLesson']);
                 $("#EditAG-Discipline-NumberHours").val(json[0]['NumberHours']);
                 $("#TeacherForThisTypeLesson").val(json[0]['TeacherID']);
+                $("#EditAG-Discipline_Semester").val(json[0]['Semester']);
+	            $("#EditAG-Discipline-FromControl").val(json[0]['FormControl']);
 
                 if(json[0]['AdditionalLoad'] === 1) {
                     $("#AdditionalLoad").prop('checked', true);
@@ -1437,7 +1559,7 @@ defined('ADMIN') or Header("Location: /");
 
                 $("#formAddDisciplineForAG select").trigger('change');
 
-                $("#MakeToUpdateStudyLoad").val(idStudyLoad[5]);
+                $("#MakeToUpdateStudyLoad").val(idStudyLoad[7]);
                 $("#AddDisciplineForAcademicGroups").text("Сохранить");
                 $("#btnDeleteStudyLoad").attr('hidden', false);
                 $("#prompt-infoStudyLoad").html("");
