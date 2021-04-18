@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{api, bootstrap, bootstrap-editable, bootstrap-select, datatablestab.rus, jquery, jquery-1.11.3, jquery-ui, jquery.bdt, jquery.dataTables, jquery.sortelements, select2, style}" />
+    <file url="PROJECT" libraries="{api, bootstrap, bootstrap-editable, bootstrap-select, buttons.bootstrap4, dataTables.bootstrap4, datatables, datatablestab.rus, jquery, jquery-1.11.3, jquery-3.2.1, jquery-latest, jquery-ui, jquery.bdt, jquery.dataTables, jquery.sortelements, pdfmake, select2, style}" />
   </component>
 </project>

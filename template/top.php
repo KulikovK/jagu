@@ -28,6 +28,8 @@
         </div>
             <?
             $db = db_connect();
+            if($db == NULL)
+                exit();
           switch (isAuthUser())
           {
               case 'teacher':
