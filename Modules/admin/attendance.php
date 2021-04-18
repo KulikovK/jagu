@@ -1,4 +1,13 @@
 <?php defined('ADMIN') or die("Доступ закрыт!");
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 ?>
 
 <div class="card">
@@ -30,8 +39,9 @@
             </div>
             <div class="form-group">
                 <label for="Date" class="mr-sm-2" >Дата</label>
-                <input class="form-control mr-sm-2" id="Date" value="<?=$_POST['DateOfStudy']?>" required type="date" name="DateOfStudy">
+                <input class="form-control mr-sm-2" id="Date" value="<?=date('d-m-Y')?>" required type="text" name="DateOfStudy">
                 <input type="submit" id="btnShowTable" class="btn btn-primary mr-sm-2" value="Показать">
+
 
             </div>
 
@@ -47,6 +57,13 @@
 </div>
 
 <script>
+
+    $("#Date").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true
+    });
+
     function show(AGCode, Date)
     {
         $.ajax({
@@ -70,7 +87,7 @@
     let fromAttendance = $("#formFindAttendance");
 
     fromAttendance.on('submit', function (ev){
-        $("#content").html("<img width='100px' src='/img/loaderData.gif' alt='Загрузка'/><p class='text-info h4'>Получение информации...</p>");
+        $("#content").html("<img width='100' src='/img/loaderData.gif' alt='Загрузка'/><p class='text-info h4'>Получение информации...</p>");
         ev.preventDefault();
         let AGCode = $("#AcademicGroups").val();
         let Date = $("#Date").val();
