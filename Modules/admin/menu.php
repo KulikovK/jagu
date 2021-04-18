@@ -8,11 +8,9 @@
 <li class="nav-item">
     <a id="NAW_Groups" class="nav-link" href="?page=AcademicGroups">Группы</a>
 </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="#">Факультеты</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Дисциплины</a>
+                <a class="nav-link" href="?page=discipline">Дисциплины</a>
             </li>
 
 <li class="nav-item">
