@@ -1,4 +1,13 @@
 <?php
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 //API: получение информации об учебной нагрузке
 
 // для группы
@@ -15,9 +24,17 @@ if(isset($_POST['AGCode']))
     $AGCode = $_POST['AGCode'];
 
     $qwery = "Select SL_Id As ID,
-       d.DISC_name As DisciplineName, t.TL_Name As TypeLessonName, SL_NumberHours As NumberHours, concat(t2.TP_Surname, ' ', t2.TP_Name, ' ', t2.TP_MiddleName) As TeacherName, SL_AdditionalLoad as AL from studyload
+       d.DISC_name As DisciplineName, 
+       t.TL_Name As TypeLessonName, 
+       SL_NumberHours As NumberHours, 
+       concat(t2.TP_Surname, ' ', t2.TP_Name, ' ', t2.TP_MiddleName) As TeacherName,
+       SL_AdditionalLoad as AL,
+       SL_SemesrNumber As Semester,
+       f.FOC_Name As FormControl
+from studyload
 join discipline d on studyload.SL_DISC_id = d.DISC_id
 join typelesson t on studyload.SL_TypeLesson_code = t.TL_id
+left join formofcontrol f ON studyload.SL_FormControl_id = f.FOC_Abbreviation
 join teacherprofile t2 on SL_Teacher_id = t2.TP_UserID where SL_AcademGroup_code =:AGCode";
 
     try {
@@ -44,7 +61,9 @@ join teacherprofile t2 on SL_Teacher_id = t2.TP_UserID where SL_AcademGroup_code
                 $row['DisciplineName'],
                 $row['TeacherName'],
                 $row['TypeLessonName'],
+                $row['Semester'],
                 $row['NumberHours'],
+                $row['FormControl'],
                 $row['AL'] == 1 ? 'Да' : 'Нет',
                 $row['ID']
             );
@@ -70,7 +89,9 @@ if(isset($_POST['SLID']))
     $query = "Select SL_DISC_id As DisciplineID, SL_TypeLesson_code As TypeLesson,
        SL_NumberHours As NumberHours,
        SL_Teacher_id As TeacherID,
-       SL_AdditionalLoad As AdditionalLoad
+       SL_AdditionalLoad As AdditionalLoad,
+       SL_SemesrNumber As Semester,       
+       SL_FormControl_id As FormControl
        from studyload 
 
 where SL_Id = :id";
