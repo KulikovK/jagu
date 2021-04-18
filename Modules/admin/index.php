@@ -1,4 +1,13 @@
 <?php require_once($_SERVER['DOCUMENT_ROOT']."/cfg/core.php");
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 if(isAuthUser() != 'admin')
     Header("Location: /");
 
@@ -33,6 +42,11 @@ $Page_Title = "Администратор"?>
         case 'AcademicGroups':
         {
             require_once("AcademicGroups.php");
+            break;
+        }
+        case 'discipline':
+        {
+            require_once("discipline.php");
             break;
         }
         default:{
