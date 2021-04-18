@@ -1130,7 +1130,25 @@ defined('ADMIN') or Header("Location: /");
     })
 
 
+    $("#BtnDeleteSubGroups").click(function (){
+        $.ajax({
+            method: 'post',
+            url: 'API/DeleteSubgroups.php',
+            data: {SGID: $("#BtnDeleteSubGroups").val()},
+            dataType: 'html',
 
+            success: function (html){
+                $("#promptInfoSubgroups").html(html);
+            },
+            error: function (){
+                $("#promptInfoSubgroups").html("<p class='alert alert-danger'>Ошибка отправки запроса на удаление</p>");
+            }
+        });
+        $("#promptInfoSubgroups").show();
+        TableSubgroups.ajax.reload();
+        $("#divBlockStudentListForSG").attr('hidden', true);
+        $("#divBlockTableSubgroups").attr('hidden', false);
+    });
 
 
     StudyLoad.column(5).visible(false);
