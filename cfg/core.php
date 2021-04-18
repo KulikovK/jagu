@@ -1,4 +1,13 @@
 <?php
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 require_once("global.php");
 global $RESPONSE_AJAX;
 session_start();
@@ -28,7 +37,7 @@ function db_connect()
         }
     catch (PDOException $PDOException)
     {
-      // print $PDOException->getMessage();
+      echo "<p class='alert alert-danger'>Ошибка соединения с базой данных!</p>";
     }
     return NULL;
 }
