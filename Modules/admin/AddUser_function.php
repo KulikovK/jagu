@@ -1,4 +1,22 @@
 <?php
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 /*Функционал добавления пользователей*/
 require_once ($_SERVER['DOCUMENT_ROOT'].'/cfg/core.php');
 
@@ -70,7 +88,7 @@ if(isset($_GET['teacher'])){
     $Surname  = $_POST['Surname'];
 $Name = $_POST['Name'];
 $MiddleName = isset($_POST['MiddleName'])? $_POST['MiddleName'] : null;
-$BrieflyName = isset($_POST['BrieflyName'])? $_POST['BrieflyName'] : null;;
+$BrieflyName = isset($_POST['BrieflyName']) ? $_POST['BrieflyName'] : null;;
 $DateOfBirth = $_POST['DateOfBirth'];
 $GenderTeacher = $_POST['GenderTeacher'];
 $AcademicDegree = isset($_POST['AcademicDegree']) && $_POST['AcademicDegree'] != '' ? $_POST['AcademicDegree'] : null;
