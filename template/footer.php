@@ -55,10 +55,7 @@
                 text: 'Выбрать столбцы'
             }
         ],
-        columnDefs: [ {
-            targets: -1,
-            visible: false
-        } ],
+
         stateSave: true
     });
 
