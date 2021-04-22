@@ -1,7 +1,7 @@
 <header class="sticky-top">
 
 
-    <nav class="nav navbar-dark bg-dark navbar-expand-lg justify-content-between">
+    <nav class="nav navbar-dark bg-dark border-bottom border-success navbar-expand-lg justify-content-between">
         <div class=" p-2">
             <img src="/img/jagu.png" alt="LOGO" size="15">
             <a class="navbar-brand" style="font-family: 'Calibri',serif; font-size: 100%; font-style: oblique" title="
