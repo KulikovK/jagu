@@ -11,6 +11,15 @@
 /*
  * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
  * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
  * Module: Administrator
  * Submodule: Discipline Panel
  * Description: Модул управления списклм дисциплин
@@ -46,6 +55,7 @@
 
 	    <div id="divBlockManagerDiscipline" class="border border-info bg-light p-2 m-auto" style="display: none;height: 25%; width: 50%; border-radius: 2%">
 		    <form id="formDiscipline">
+			    <input type="text" id="IDDiscipline" name="DisciplineID" hidden>
 			    <div class="form-group row">
 				    <label class="col-form-label col-sm-4">Название дисциплины:</label>
 				    <div class="col-sm-8">
@@ -117,14 +127,17 @@
     });
 
     $("#ShowBlockAddDiscipline").click(function (){
+	    $("#formDiscipline select").trigger('change');
         $("#divBlockTableDiscipline").slideToggle();
         $("#divBlockManagerDiscipline").toggle();
         $("#divBlockBtnDisciplineManager").toggle();
         $("#ShowBlockAddDiscipline").toggle();
+     //   $("#IDDiscipline").val("");
     });
 
     $("#Cancle").click(function (){
         $("#ShowBlockAddDiscipline").trigger('click');
+        $("#formDiscipline").trigger('reset');
     });
 
     $(document).ready(function (){
@@ -155,6 +168,7 @@
     $("#formDiscipline").on('submit', function (e){
         e.preventDefault();
 
+
         $.ajax({
             method: 'post',
             url: 'API/DisciplineManager.php?operation=add',
@@ -171,6 +185,8 @@
             }
 
         });
+
+	    $("#formDiscipline").trigger('reset');
 	    TableDisciplineList.ajax.reload();
         $("#ShowBlockAddDiscipline").trigger('click');
     });
@@ -224,8 +240,7 @@
 	    });
 
 
-
-
+    	$("#IDDiscipline").val(ID);
 
     	$("#ShowBlockAddDiscipline").trigger('click');
     }
