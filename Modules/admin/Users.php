@@ -1,4 +1,13 @@
 <?php
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
 defined('ADMIN') or Header('Location: /');
 
 if (isset($_GET['operation']))
@@ -120,7 +129,7 @@ break;
             Добавить преподавателя
         </div>
         <!-- Modal подключаем модальные окна -->
-        <? require_once("UsersModalDialog.php") ?>
+	    <?php require_once("UsersModalDialog.php") ?>
     </div>
 
 
@@ -138,7 +147,7 @@ break;
         <div class="tab-content ml-3 mr-3 mt-3" id="myTabContent">
             <div class="tab-pane fade active show" id="student" role="tabpanel" aria-labelledby="student-tab">
 
-                <?
+	            <?php
                 $db = db_connect();
                 $query = "select User_id, u.User_email As email,
        SP_Surname As SurName,
@@ -172,7 +181,7 @@ from studentprofile join users u on studentprofile.SP_id = u.User_id";
                     </thead>
                     <tbody>
 
-                <?
+                    <?php
                 foreach ($Users as $UsersRow)
                 {
 
@@ -219,7 +228,7 @@ echo '</tr>';
             </div>
 
             <div class="tab-pane fade" id="teacher" role="tabpanel" aria-labelledby="teacher-tab-tab">
-                <?
+	            <?php
 
 
 
@@ -243,7 +252,7 @@ echo '</tr>';
                         </tr>
                         </thead>
                         <tbody id="TableTeacherBody">
-                        <?
+                        <?php
                         ?>
 
 

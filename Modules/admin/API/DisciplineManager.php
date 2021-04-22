@@ -11,6 +11,15 @@
 /*
  * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
  * Project: JAGU
+ * Module:
+ * Submodule:
+ * Description:
+ * Version:
+ */
+
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ * Project: JAGU
  * Module: Administrator
  * Submodule: Discipline
  * Description: Discipline Manager
@@ -73,21 +82,42 @@ JOIN teacherprofile t ON t.TP_UserID = discipline.DISC_LeadTeacher_id";
             $TeacherID = $_POST['Teacher'];
             $Description = $_POST['DisciplineDescription'];
 
-            $Insert = "INSERT into discipline(DISC_name, DISC_LeadTeacher_id, DISC_Description) 
+            if($_POST['DisciplineID'] == '') {
+                $Insert = "INSERT into discipline(DISC_name, DISC_LeadTeacher_id, DISC_Description) 
 VALUE(:DisciplineName, :Teacher, :DisciplineDescription)";
 
-            $stmp = $db->prepare($Insert);
+                $stmp = $db->prepare($Insert);
 
-            $Result = $stmp->execute([
-                'DisciplineName'=>$DisciplineName,
-                'Teacher'=>$TeacherID,
-                'DisciplineDescription'=>$Description
-            ]);
+                $Result = $stmp->execute([
+                    'DisciplineName' => $DisciplineName,
+                    'Teacher' => $TeacherID,
+                    'DisciplineDescription' => $Description
+                ]);
 
-            if($Result)
-                exit("<div class='alert alert-success'>Дисциплина создана!</div>");
+                if ($Result)
+                    exit("<div class='alert alert-success'>Дисциплина создана!</div>");
+                else
+                    exit("<div class='alert alert-danger'>Ошибка создания дисциплины</div>");
+            }
             else
-                exit("<div class='alert alert-danger'>Ошибка создания дисциплины</div>");
+            {$ID = $_POST['DisciplineID'];
+
+                $UpdateQuery = "Update jagu.discipline Set DISC_name = :Name, DISC_LeadTeacher_id = :Teacher, DISC_Description = :Description WHERE DISC_id = :id";
+                $stmp = $db->prepare($UpdateQuery);
+
+                $Result = $stmp->execute([
+                    'Name'=>$DisciplineName,
+                    'Teacher'=>$TeacherID,
+                    'Description'=>$Description,
+                    'id'=>$ID,
+                ]);
+
+                if ($Result)
+                    exit("<div class='alert alert-success'>Информация обновлена</div>");
+                else
+                    exit("<div class='alert alert-danger'>Ошибка при обновлении информации!</div>");
+
+            }
 
         }
 
