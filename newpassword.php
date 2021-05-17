@@ -1,4 +1,7 @@
 <?php
+/*
+ * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
+ */
 require_once("cfg/core.php");
 
 if(!isset($_POST['password']) || !isset($_POST['id']))
@@ -54,7 +57,7 @@ try {
 catch (PDOException $exception)
 {
     echo '<div class="alert alert-danger">
-<p class="h4">Оштбка</p>
+<p class="h4">Ошибка</p>
 <p>На строне сервера возникла техническая ошибка!</p>
 </div>';
    // print_r($exception->getLine());
