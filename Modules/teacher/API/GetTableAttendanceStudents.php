@@ -15,7 +15,7 @@ $Teacher = $_POST['Teacher'];
 
 $LessonListQuery = "SELECT LI_id AS LessonID, LI_date AS date, s.SL_TypeLesson_code AS TypeLesson FROM lessoninfo
 JOIN studyload s ON lessoninfo.StudyLoad_id = s.SL_Id
-WHERE s.SL_AcademGroup_code = :AGCode AND s.SL_DISC_id = :Discipline ORDER BY LI_date";
+WHERE s.SL_AcademGroup_code = :AGCode AND s.SL_DISC_id = :Discipline ORDER BY LI_date, LI_LessonNumber_id";
 
 try {
 	$db = db_connect();
