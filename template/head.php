@@ -29,12 +29,9 @@
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
+<link rel="stylesheet" type="text/css" href="/js/dist/modal-box.min.css"/>
+<script src="/js/dist/modal-box.min.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="/js/jquery.sweet-modal.min.css">
-<script src="/js/jquery.sweet-modal.min.js"></script>
-
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
-<script src="/js/animatedModal.min.js"></script>
 
 <script>
 	/* Локализация datepicker */
