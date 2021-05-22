@@ -1,12 +1,4 @@
 <?php
-/*
- * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
- * Project: JAGU
- * Module:
- * Submodule:
- * Description:
- * Version:
- */
 
 
 /*
