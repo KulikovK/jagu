@@ -8,22 +8,9 @@
  * Version:
  */
 
-/*
- * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
- * Project: JAGU
- * Module:
- * Submodule:
- * Description:
- * Version:
- */
 
 /*
  * Copyright (c) 2021. Kulikov K. P. [kostj1998.10.13@yandex.ru]
- * Project: JAGU
- * Module: Administrator
- * Submodule: Discipline
- * Description: Discipline Manager
- * Version: 21.04.18.2015
  */
 //API: управление дицспилинами
 // TODO: реализовать обновление информации о дисциплине

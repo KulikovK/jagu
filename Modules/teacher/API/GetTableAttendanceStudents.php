@@ -13,17 +13,34 @@ $AGCode = $_POST['AGCode'];
 $Discipline = $_POST['Discipline'];
 $Teacher = $_POST['Teacher'];
 
-$LessonListQuery = "SELECT LI_id AS LessonID, LI_date AS date, s.SL_TypeLesson_code AS TypeLesson FROM lessoninfo
-JOIN studyload s ON lessoninfo.StudyLoad_id = s.SL_Id
-WHERE s.SL_AcademGroup_code = :AGCode AND s.SL_DISC_id = :Discipline ORDER BY LI_date, LI_LessonNumber_id";
+//exit(json_encode($_POST['ShowAllLesson']));
+
+$LessonListQuery = "SELECT LI_id AS LessonID, LI_date AS date, s.SL_TypeLesson_code AS TypeLesson, LI_LessonTopic As Topic FROM lessoninfo
+JOIN studyload s ON lessoninfo.StudyLoad_id = s.SL_Id " .
+		"WHERE s.SL_AcademGroup_code = :AGCode AND s.SL_DISC_id = :Discipline" . ($_POST['TypeLesson'] != '0' && $_POST['TypeLesson'] != '' ? " And s.SL_TypeLesson_code = :TypeLessonID " : "") . ($_POST['ShowAllLesson'] == '1' ? " And SL_Teacher_id = :TeacherID " : "") .
+		" ORDER BY LI_date, LI_LessonNumber_id";
+
+//exit($LessonListQuery);
 
 try {
 	$db = db_connect();
 	$stmp = $db->prepare($LessonListQuery);
-	$stmp->execute([
+
+
+	$ArryaQuery = [
 			'AGCode' => $AGCode,
 			'Discipline' => $Discipline,
-	]);
+	];
+
+	if ($_POST['TypeLesson'])
+		$ArryaQuery['TypeLessonID'] = $_POST['TypeLesson'];
+
+	if ($_POST['ShowAllLesson'])
+		$ArryaQuery['TeacherID'] = $Teacher;
+
+//	exit(json_encode($ArryaQuery));
+
+	$stmp->execute($ArryaQuery);
 
 	$LessonList = $stmp->fetchAll(PDO::FETCH_ASSOC);
 
@@ -37,6 +54,7 @@ try {
 
 	$StudentList = $stmp->fetchAll(PDO::FETCH_ASSOC);
 	?>
+
 	<a id="ShowHelpToAttendanceTable" href="#">Подсказка</a>
 	<div id="HelpToAttendanceTable" class="m-2" style="display: none">
 		<div class="row">
@@ -49,16 +67,18 @@ try {
 		</div>
 	</div>
 
-	<table id="AttendanceTable" class="table table-sm table-responsive table-hover table-bordered">
-		<thead class="thead-light text-sm-center">
+
+	<table id="AttendanceTable" class="table table-bordered table-info table-hover" style="width: 100%">
+		<thead class="text-center border border-dark">
+
 		<tr>
-			<th>Студенты</th>
+			<th class="">Студенты</th>
 			<?php
 			foreach ($LessonList as $row)
-				echo "<th class=''>" . date('d.m.y', strtotime($row['date'])) . "</br>" . $row['TypeLesson'] . "</th>"
+				echo "<th title='Нажмите чтобы редактировать' onclick='ShowEditLesson(" . $row['LessonID'] . ")' style='cursor: pointer' class='no-sort btn-sm btn-outline-info'>" . date('d.m.y', strtotime($row['date'])) . "<hr>" . $row['TypeLesson'] . "</th>"
 			?>
-			<th>Пропусков</th>
-			<th>Баллы</th>
+			<th class="">Пропущено<br> часов</th>
+			<th class="">Баллы</th>
 		</tr>
 
 		</thead>
@@ -66,8 +86,8 @@ try {
 
 		<?php
 		foreach ($StudentList as $row) {
-			echo "<tr class='text-center'>
-<td class='bg-light'>" . $row['FIO'] . "</td>";
+			echo "<tr class='text-sm-left'>
+<td class=''>" . $row['FIO'] . "</td>";
 
 			$GlobalGrande = 0;
 			$GlobalAttendance = 0;
@@ -80,19 +100,19 @@ try {
 				$Att = $stmp->fetch(PDO::FETCH_ASSOC);
 
 				if ($Att) {
-					echo sprintf("<td onclick='ShowEditAttendance(%s, %s)' class='%s' ><i>%s</i></td>", $item['LessonID'], $row['ID'], $Att['NumberHours'] == 2 ? 'table-danger' : ($Att['NumberHours'] == 1 ? 'table-warning' : 'table-success'), $Att['Grande']);
+					echo sprintf("<td onclick='' class='%s text-center' ><i>%s (%s)</i></td>", $Att['NumberHours'] >= 2 ? 'table-danger' : ($Att['NumberHours'] == 1 ? 'table-warning' : 'table-success'), $Att['Grande'], $Att['NumberHours'] == 2 ? 'Н/б' : ($Att['NumberHours'] == 1 ? 'Опздл' : 'Был'));
 					$GlobalAttendance += $Att['NumberHours'];
 					$GlobalGrande += $Att['Grande'];
 				} else
-					echo "<td class='table-secondary'>-</td>";
+					echo "<td class='table-secondary'></td>";
 
 			}
 			?>
-			<td><?=
+			<td class="text-center"><?=
 				$GlobalAttendance
 				?></td>
 
-			<td>
+			<td class="text-center">
 				<?=
 				$GlobalGrande
 				?>
@@ -107,11 +127,27 @@ try {
 	</table>
 
 	<script>
-		$("#AttendanceTable").dataTable({
-			processing: true,
+		$("#AttendanceTable").DataTable({
+
+			select: 'single',
+			ordering: true,
+
 			language: {
 				url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Russian.json",
-			}
+			},
+			dom: 'ftB',
+			scrollY: false,
+			scrollX: true,
+			scrollCollapse: true,
+			paging: false,
+			fixedColumns: {
+				leftColumns: 1,
+				rightColumns: 2
+			},
+
+			aoColumnDefs: [
+				{'bSortable': false, 'aTargets': ['no-sort']}
+			]
 		});
 
 
@@ -119,13 +155,11 @@ try {
 			$("#HelpToAttendanceTable").slideToggle();
 		});
 
-		function ShowEditAttendance(LessonID, StudentID) {
-			alert(LessonID + "\n" + StudentID);
-		}
+
 	</script>
 
 
 	<?php
 } catch (PDOException $exception) {
-	exit("<p class='alert alert-danger'>Ошибка запроса. Код:" . $exception->getCode() . " </p>");
+	exit("<p class='alert alert-danger'>Ошибка запроса. Код:" . $exception->getMessage() . " </p>");
 }

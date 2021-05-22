@@ -5,65 +5,92 @@
 
 //API: запись информации о посещаемости
 
+$RESPONSE_AJAX['success'] = false;
 if (empty($_POST))
-	exit('empty post!');
+    exit(json_encode($RESPONSE_AJAX));
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/cfg/core.php';
 
+
 try {
 
-	$db = db_connect();
-	$StudentsList = array();
-	////Если не выбрана подгруппа
-	if ($_POST['Subgroups'] == 0) {
-		$queryStudentList = "SELECT SP_id AS ID, CONCAT(SP_Surname, ' ', SP_Name, ' ', SP_MiddleName) AS FIO
+    $db = db_connect();
+    $stmp = null;
+    $StudentsList = array();
+    ////Если не выбрана подгруппа
+    ///
+
+    if ($_POST['LessonID']) {
+        $queryStudentList = "SELECT s.SP_id AS ID, 
+       CONCAT(SP_Surname, ' ', SP_Name, ' ', SP_MiddleName) AS FIO,
+       AL_NumberHours AS Hours,
+       AL_LessonGrande AS Grade,
+       AL_Coments AS Comments
+
+FROM attendancelesson
+JOIN studentprofile s ON attendancelesson.AL_Student_id = s.SP_id
+WHERE AL_LessonInfo_id = :LessonID
+ORDER BY FIO";
+
+        $stmp = $db->prepare($queryStudentList);
+
+        $stmp->execute(['LessonID' => $_POST['LessonID']]);
+    } elseif ($_POST['Subgroups'] == 0) {
+        $queryStudentList = "SELECT SP_id AS ID, CONCAT(SP_Surname, ' ', SP_Name, ' ', SP_MiddleName) AS FIO
 FROM studentprofile WHERE SP_AcademGroup_id = :AGCode ORDER BY FIO";
 
-		$stmp = $db->prepare($queryStudentList);
+        $stmp = $db->prepare($queryStudentList);
+        $stmp->execute(['AGCode' => $_POST['AGCode']]);
 
-		$stmp->execute(['AGCode' => $_POST['AGCode']]);
+    } else {
+        $queryStudentList = "SELECT SP_id AS ID, CONCAT(SP_Surname, ' ', SP_Name, ' ', SP_MiddleName) AS FIO
+FROM studentlistinsubgroups JOIN studentprofile s ON s.SP_id = studentlistinsubgroups.SLS_Student_id
+WHERE SLS_SubGroups_id = :Subgroups ORDER BY FIO";
 
-		$StudentsList = $stmp->fetchAll(PDO::FETCH_ASSOC);
+        $stmp = $db->prepare($queryStudentList);
+        $stmp->execute(['Subgroups' => $_POST['Subgroups']]);
 
-		if (!$StudentsList)
-			exit('Student List empty!');
 
-		$tabe = "<table id='WriteAttendanceTable' class='table table-hover table-bordered'><thead><tr><th hidden></th><th>Студенты</th>" .
-				"<th>Пропущено(час)</th>" .
-				"<th>Баллы</th>" .
-				"<th>Комментарий</th>" .
-				"</tr></thead><tbody>";
+    }
 
-		foreach ($StudentsList as $item) {
-			$tabe .= "<tr><td hidden>" . $item['ID'] . "</td><td>" . $item['FIO'] . "</td>" .
-					"<td><input class='form-control' name='AttendaneHours' type='number' min='0' max='2' value='0'></td>" .
-					"<td><input class='form-control' name='LessonGrande' type='number' value='0'></td>" .
-					"<td><input class='form-control' name='Commetnts' type='text'></td>" .
-					"</tr>";
+    $StudentsList = $stmp->fetchAll(PDO::FETCH_ASSOC);
 
-		}
-		$tabe .= "</tbody></table>";
 
-		echo(($tabe));
+    if (!$StudentsList)
+        exit(json_encode($RESPONSE_AJAX));
 
-	}
+
+    $json = array();
+
+    if (!isset($_POST['LessonID']) || $_POST['LessonID'] == null) {
+        foreach ($StudentsList as $item) {
+            $json[] = array(
+                0 => $item['ID'],
+                1 => $item['FIO'],
+                2 => 0,
+                3 => 0,
+                4 => ""
+            );
+        }
+    } else {
+        foreach ($StudentsList as $item) {
+            $json[] = array(
+                0 => $item['ID'],
+                1 => $item['FIO'],
+                2 => ($item['Hours'] == null ? 0 : $item['Hours']),
+                3 => ($item['Grade'] == null ? 0 : $item['Grade']),
+                4 => ($item['Comments'] == null ? "" : $item['Comments'])
+            );
+        }
+    }
+
+    $RESPONSE_AJAX['data'] = $json;
+    $RESPONSE_AJAX['success'] = true;
+
+    echo(json_encode($RESPONSE_AJAX));
 
 
 } catch (PDOException $exception) {
-	exit(($exception->getMessage()));
+    $RESPONSE_AJAX['ErrorInfo'] = $exception->getMessage();
+    exit(json_encode($RESPONSE_AJAX));
 }
-
-?>
-
-<script>
-	$("#WriteWriteAttendanceTable tbody tr td input").change(function (e) {
-		if (e.val() == 2) {
-			e.prop("background", "#e52c2c");
-		}
-	});
-
-	$("#WriteAttendanceTable").dataTable({
-		ordering: false
-	});
-
-</script>
