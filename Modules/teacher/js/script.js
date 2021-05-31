@@ -10,14 +10,14 @@
 $(document).ready(function () {
     $("#SelectListAG").select2({
         width: '25%',
-        theme: 'classic',
+    //    theme: 'classic',
         allowClear: true,
         placeholder: 'Выберите группу'
     });
 
     $("#SelectListDiscipline").select2({
         width: '25%',
-        theme: 'classic',
+        //    theme: 'classic',
         allowClear: true,
         placeholder: 'Выберите дисциплину'
     });

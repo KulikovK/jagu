@@ -18,7 +18,7 @@ $Page_Title = 'Преподаватель';
 	<?php require_once($_SERVER['DOCUMENT_ROOT'] . "/template/head.php"); ?>
 </head>
 
-<body class="">
+<body class="bg-dark">
 <?php require_once($_SERVER['DOCUMENT_ROOT'] . "/template/top.php"); ?>
 
 <main id="TeacherMain" class="p-2 m-2">
@@ -27,6 +27,11 @@ $Page_Title = 'Преподаватель';
 		case 'journal':
 		{
 			require_once 'journal.php';
+			break;
+		}
+		case 'reports':
+		{
+			require_once 'reports.php';
 			break;
 		}
 

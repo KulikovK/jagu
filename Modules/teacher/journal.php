@@ -6,8 +6,8 @@
 ?>
 
 
-<div class="card border-primary">
-	<div class="card-header bg-info text-white">
+<div class="card  text-dark">
+	<div class="card-header bg-primary text-white">
 		<div class="card-text h5 text-center">Журнал академической группы</div>
 
 		<div>
@@ -30,9 +30,10 @@
 			</form>
 		</div>
 
-		<div id="DivBlockBtnJournal" style="display: none">
+		<div id="DivBlockBtnJournal" class="" style="display: none">
 			<a id="btnAddLesson" href="#mdAddLesson" class="btn btn-light">Добавить занятие</a>
 		</div>
+
 
 	</div>
 
@@ -261,7 +262,7 @@
 
 	$("#SelectTypeLesson").select2({
 		width: '25%',
-		theme: 'classic',
+		//	theme: 'classic',
 		allowClear: true,
 		placeholder: 'Тип занятий'
 	});
@@ -381,7 +382,7 @@
 
 	$("#CreateLesson select").select2({
 		width: '100%',
-		theme: 'classic',
+		//theme: 'classic',
 		allowClear: true,
 		placeholder: 'Выберите значение'
 	});
